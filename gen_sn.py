@@ -1,6 +1,12 @@
 from itertools import cycle
 import base64
-    
+
+
+secret_data = "20201116"
+key = 'awesomepassword'
+affine_multi = 23
+affine_add = 11
+
 def xor_crypt_string(data, key = 'awesomepassword', encode = False):
     from itertools import cycle
     import base64
@@ -40,26 +46,40 @@ def xor_crypt_string(data, encode = False):
     return xored
 
 
-def affine(data):
+def affine(data, encode = False):
     # for b in bytes(data, 'utf-8'):
         # print(chr((b * affine_multi + affine_add) % 128))
     # return ""
-    return "".join(chr((b * affine_multi + affine_add) % 128) for b in bytes(data, 'utf-8'))
+    if encode:
+        return "".join(chr(((b - 33) * affine_multi + affine_add) % 94 + 33) for b in bytes(data, 'utf-8'))
+    else:
+        result = ""
+        for b in bytes(data, 'utf-8'):
+            d = b - 33 - affine_add
+            while d % affine_multi != 0:
+                d += 94
+            # print(str(d) + "  " + str(affine_multi))
+            result += chr(int(d / affine_multi) + 33)
+        return result
 
 
 def encode(data):
     data = reverse(data)
     data = add_checksum(data)
+    print(data)
     data = xor_crypt_string(data, True)
     print(data)
-    data = affine(data)
+    data = affine(data[:-1], True)
     print(data)
     return data
 
 
-secret_data = "20201116"
-key = 'awesomepassword'
-affine_multi = 23
-affine_add = 11
+def decode(data):
+    data = affine(data)
+    print(data)
+    data = xor_crypt_string(data, False)
+    print(data)
 
-encode(secret_data)
+
+cipher_text = encode(secret_data)
+decode(cipher_text)
