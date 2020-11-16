@@ -5,7 +5,7 @@
         $date_str = $_GET['data'];
         $key = $_GET['key'];
         $encode = $_GET['convert'];
-        system("python gen_sn.py " . $date_str . " " . $key . " " . $encode);
+        system('python gen_sn.py "' . $date_str . '" "' . $key . '" ' . $encode);
     } else {
         return "Insufficient Parameters";
     }

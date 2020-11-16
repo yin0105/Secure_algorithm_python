@@ -91,7 +91,8 @@ def decode(data):
         data = affine(data)
         data = xor_crypt_string(data, False)
         if not check_checksum(data): return "Invalid Secure Code"
-        return reverse(data[:8])
+        data = reverse(data[:8])
+        return data[:4] + "-" + data[4:6] + "-" + data[6:8]
     except:
         return "Invalid Secure Code"
 
@@ -99,5 +100,3 @@ if convert_mode == "encode":
     print(encode(secret_data))
 elif convert_mode =="decode":
     print(decode(secret_data))
-# cipher_text = encode(secret_data)
-# plain_text = decode(cipher_text)
