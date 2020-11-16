@@ -9,8 +9,8 @@ secret_data = str(sys.argv[1])
 key = str(sys.argv[2])
 convert_mode = str(sys.argv[3])
 if convert_mode not in ["encode", "decode"]: sys.exit()
-affine_multi = 23
-affine_add = 11
+affine_multi = 11
+affine_add = 23
 
 
 def xor_crypt_string(data, key = 'awesomepassword', encode = False):
@@ -37,7 +37,7 @@ def add_checksum(data):
         sum = 0
         for j in range(4):
             sum += int(data[i * 4 + j])
-        data += str(sum)
+        data += str(sum % 10)
     return data
 
 
@@ -48,7 +48,7 @@ def check_checksum(data):
         sum = 0
         for j in range(4):
             sum += int(data[i * 4 + j])
-        if sum != int(data[8 + i]): return False
+        if sum % 10 != int(data[8 + i]): return False
     
     return True
 
@@ -67,14 +67,14 @@ def xor_crypt_string(data, encode = False):
 
 def affine(data, encode = False):
     if encode:
-        return "".join(chr(((b - 33) * affine_multi + affine_add) % 94 + 33) for b in bytes(data, 'utf-8'))
+        return "".join(chr(((b - 35) * affine_multi + affine_add) % 92 + 35) for b in bytes(data, 'utf-8'))
     else:
         result = ""
         for b in bytes(data, 'utf-8'):
-            d = b - 33 - affine_add
+            d = b - 35 - affine_add
             while d % affine_multi != 0:
-                d += 94
-            result += chr(int(d / affine_multi) + 33)
+                d += 92
+            result += chr(int(d / affine_multi) + 35)
         return result
 
 
