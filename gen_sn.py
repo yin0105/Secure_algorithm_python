@@ -1,11 +1,17 @@
 from itertools import cycle
-import base64, re
+import base64, re, sys
 
 
-secret_data = "20201116"
-key = 'awesomepassword'
+# secret_data = "20201116"
+# key = 'awesomepassword'
+if len(sys.argv) < 4: sys.exit()
+secret_data = str(sys.argv[1])
+key = str(sys.argv[2])
+convert_mode = str(sys.argv[3])
+if convert_mode not in ["encode", "decode"]: sys.exit()
 affine_multi = 23
 affine_add = 11
+
 
 def xor_crypt_string(data, key = 'awesomepassword', encode = False):
     from itertools import cycle
@@ -30,14 +36,21 @@ def add_checksum(data):
     for i in range(2):
         sum = 0
         for j in range(4):
-            sum += int(data[i*4+j])
+            sum += int(data[i * 4 + j])
         data += str(sum)
     return data
 
 
 def check_checksum(data):
-    if len(re.findall("^[0-9]{10}$", s)) != 1:
+    if len(re.findall("^[0-9]{10}$", data)) != 1:
         return False
+    for i in range(2):
+        sum = 0
+        for j in range(4):
+            sum += int(data[i * 4 + j])
+        if sum != int(data[8 + i]): return False
+    
+    return True
 
 
 def xor_crypt_string(data, encode = False): 
@@ -77,12 +90,14 @@ def decode(data):
     try:
         data = affine(data)
         data = xor_crypt_string(data, False)
+        if not check_checksum(data): return False
+        return reverse(data[:8])
     except:
         return ""
-    return data
 
-cipher_text = encode(secret_data)
-print(cipher_text)
-decode(cipher_text)
-a = decode("aaaaaaaaaaaaaaaa")
-print(a)
+if convert_mode == "encode":
+    print(encode(secret_data))
+elif convert_mode =="decode":
+    print(decode(secret_data))
+# cipher_text = encode(secret_data)
+# plain_text = decode(cipher_text)
