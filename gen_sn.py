@@ -90,10 +90,10 @@ def decode(data):
     try:
         data = affine(data)
         data = xor_crypt_string(data, False)
-        if not check_checksum(data): return False
+        if not check_checksum(data): return "Invalid Secure Code"
         return reverse(data[:8])
     except:
-        return ""
+        return "Invalid Secure Code"
 
 if convert_mode == "encode":
     print(encode(secret_data))
